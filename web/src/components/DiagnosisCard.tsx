@@ -9,18 +9,6 @@ export function DiagnosisCard() {
   const { session, update, updateSession, getStore } = useStore();
   const { diagnosis, history, iteration } = session;
   const [busy, setBusy] = useState(false);
-  if (!diagnosis) return null;
-
-  const pct = Math.round(diagnosis.p_at_10 * 100);
-  const sparkPoints = history
-    .filter((h) => h.p_at_10 != null)
-    .slice(-10)
-    .map((h) => h.p_at_10 as number);
-
-  const countEntries = Object.entries(diagnosis.counts).sort(
-    (a, b) => (b[1] as number) - (a[1] as number)
-  );
-  const maxCount = Math.max(1, ...countEntries.map(([, v]) => v as number));
 
   const respond = useCallback(
     async (text: string) => {
@@ -62,6 +50,19 @@ export function DiagnosisCard() {
     },
     [busy, update, updateSession, getStore]
   );
+
+  if (!diagnosis) return null;
+
+  const pct = Math.round(diagnosis.p_at_10 * 100);
+  const sparkPoints = history
+    .filter((h) => h.p_at_10 != null)
+    .slice(-10)
+    .map((h) => h.p_at_10 as number);
+
+  const countEntries = Object.entries(diagnosis.counts).sort(
+    (a, b) => (b[1] as number) - (a[1] as number)
+  );
+  const maxCount = Math.max(1, ...countEntries.map(([, v]) => v as number));
 
   const decided = diagnosis.accepted != null;
   const pctColor = pct >= 70 ? '#34d399' : pct >= 50 ? '#a78bfa' : '#f87171';
