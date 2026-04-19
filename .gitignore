@@ -1,0 +1,18 @@
+outreach_list*
+.env*
+.claude*
+*.json
+*.md
+*.csv
+*.txt
+*.pdf
+*.docx
+*.doc
+*.xls
+*.xlsx
+*.pptx
+
+# Whitelisted — project docs and env template
+!.env.example
+!docs/
+!docs/*.md

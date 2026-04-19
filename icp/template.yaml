@@ -1,0 +1,99 @@
+# ICP Template — copy this file, rename it to describe your ICP
+# (e.g. icp/legal_tech_saas.yaml), and fill in answers.
+#
+# Empty / null values are fine — the strategy will skip unused axes.
+# Only `product_description` and `perfect_fit_companies` are strictly required.
+
+name: "my_icp_v1"   # filename-safe identifier
+
+# ----------- Section 1: Your product (context for evaluator) -------------
+product_description: |
+  Two-three sentences on what you sell, in plain English.
+value_prop: |
+  The one specific pain you solve.
+replaces_or_complements: []   # e.g. ["HubSpot Sales Hub", "Outreach.io"]
+
+# ----------- Section 2: Ideal customer (company) ------------------------
+company:
+  size:
+    headcount_min: null       # int, employees
+    headcount_ideal: null
+    headcount_max: null
+    revenue_range: null       # free-text, e.g. "$10M-$100M ARR"
+
+  segments: []                # free-text verticals, e.g. ["legal tech", "e-discovery"]
+  example_industries: []      # Crustdata canonical values (see docs/filter-reference.md)
+
+  # Keywords that MUST appear in the company description for a result to count
+  # as a vertical match. Crustdata's INDUSTRY filter is coarse; this narrows results
+  # that survived the filter to ones that actually match the vertical.
+  description_keywords_any: []  # e.g. ["legal", "law firm", "attorney", "case management"]
+  description_keywords_none: [] # disqualifier keywords
+
+  geography:
+    countries: []             # e.g. ["United States", "Canada", "United Kingdom"]
+    regions_or_states: []     # optional tighter filter
+
+  business_model: null        # "B2B SaaS" | "DTC" | "Enterprise" | "Marketplace" | "Agency" | "Services"
+  sells_to: null              # free-text, e.g. "law firms with 10-100 lawyers"
+
+  tech_stack:
+    uses: []                  # competitors/complements — HIGHEST-PRECISION FILTER
+    does_not_use: []
+
+  growth:
+    company_type: null        # "Private" | "Public" | "Nonprofit"
+    funding_stage_notes: null # free-text (no direct filter, proxied)
+    growth_signals: []        # e.g. ["hiring fast", "recently funded", "in the news"]
+
+  disqualifiers:
+    exclude_industries: []
+    exclude_countries: []
+    exclude_size_under: null
+    exclude_size_over: null
+    exclude_companies: []     # specific names or domains
+
+# ----------- Section 3: Ground truth (most important section) -----------
+ground_truth:
+  perfect_fit_companies:      # 3-5 real companies you'd love to close
+    - name: ""
+      domain: ""              # optional but helps enrichment
+      why: ""                 # one-line reason they're a fit
+  bad_fit_companies:          # 3-5 that look right but aren't
+    - name: ""
+      domain: ""
+      why: ""
+  already_closed_customers: []  # if any — best possible signal
+
+# ----------- Section 4: Ideal contact (person) --------------------------
+person:
+  buyer_titles: []            # who signs the contract
+  champion_titles: []
+  user_titles: []
+  primary_target: null        # "buyer" | "champion" | "user"
+
+  seniority_levels: []        # ["C-Suite", "VP", "Director", "Manager", "Senior"]
+  functions: []               # ["Sales", "Marketing", "Operations", "Product", "Engineering", ...]
+
+  experience:
+    min_years_in_role: null
+    min_years_at_company: null
+    recently_changed_jobs: false
+
+  disqualifiers:
+    exclude_titles: []
+    exclude_seniority: []
+
+  ground_truth:
+    perfect_fit_people:       # LinkedIn URLs of ideal contacts
+      - linkedin: ""
+        name: ""
+        why: ""
+    bad_fit_people: []
+
+# ----------- Section 5: Intent / triggering signals (optional) ----------
+signals:
+  pain_phrases: []            # what a frustrated buyer would say
+  trigger_events: []          # "funding", "exec change", "product launch", "layoffs"
+  competitor_names: []        # companies your prospects might leave
+  hiring_signals: []          # roles whose posting implies budget

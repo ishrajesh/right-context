@@ -1,0 +1,165 @@
+# Worked example: selling signal-triggered outreach tooling
+# to legal-tech SaaS vendors (product & GTM leaders).
+#
+# Ground truth pulled from outreach_list.csv — real companies we want to close.
+
+name: "legal_tech_saas_v1"
+
+product_description: |
+  AI-powered outreach engine that surfaces public buying signals
+  (prospect pain statements, funding, hiring triggers) and drafts
+  personalized messages for each. Drop-in for sales teams.
+value_prop: |
+  Takes generic cold outreach from ~1% reply rate to 10%+ by
+  anchoring each message in a specific, timely, public signal.
+replaces_or_complements:
+  - "Outreach.io"
+  - "Apollo.io"
+  - "Salesloft"
+
+company:
+  size:
+    headcount_min: 51
+    headcount_ideal: 200
+    headcount_max: 1000
+    revenue_range: "$10M-$100M ARR"
+
+  segments:
+    - "legal practice management SaaS"
+    - "legal tech vertical software"
+  # Canonical Crustdata INDUSTRY values learned from search output (not LinkedIn labels).
+  # "Software Development" is Crustdata's umbrella for B2B SaaS. Data is noisy though —
+  # post-filter on description or tech stack for vertical specificity.
+  example_industries:
+    - "Software Development"
+
+  # Vertical-specificity post-filter. Crustdata's INDUSTRY=Software Development
+  # returns games, media, consumer apps etc. This narrows to actual legal-tech.
+  description_keywords_any:
+    - "legal"
+    - "law firm"
+    - "attorney"
+    - "lawyer"
+    - "case management"
+    - "practice management"
+    - "e-discovery"
+  description_keywords_none:
+    - "game studio"
+    - "consumer"
+
+  geography:
+    countries: ["United States", "Canada", "United Kingdom", "Australia"]
+    regions_or_states: []
+
+  business_model: "B2B SaaS"
+  sells_to: "law firms with 5-500 attorneys"
+
+  # TECHNOLOGIES_USED returned "Correct values are []" — may be plan-gated.
+  # Leave empty until plan is confirmed; this is usually the highest-precision filter.
+  tech_stack:
+    uses: []
+    does_not_use: []
+
+  growth:
+    # COMPANY_TYPE is a PEOPLE-search filter, not company-search. Script drops it
+    # automatically. Keeping this field for the person stage.
+    company_type: "Private"
+    funding_stage_notes: "Series B to PE-backed — past seed, has GTM budget"
+    growth_signals:
+      - "hiring sales/SDR roles"
+      - "recently funded"
+
+  disqualifiers:
+    exclude_industries:
+      - "Law Practice"      # law firms themselves, not vendors
+    exclude_countries: []
+    exclude_size_under: 50
+    exclude_size_over: 2000
+    exclude_companies: []
+
+ground_truth:
+  perfect_fit_companies:
+    - name: "PracticePanther (Paradigm)"
+      domain: "joinparadigm.com"
+      why: "legal-tech SaaS, known to have active SDR team, 200-500 employees"
+    - name: "ActionStep"
+      domain: "actionstep.com"
+      why: "mid-size legal practice mgmt SaaS, US + AU + UK"
+    - name: "Smokeball"
+      domain: "smokeball.com"
+      why: "SMB legal SaaS, growing, US-based"
+    - name: "Litify"
+      domain: "litify.com"
+      why: "Salesforce-native legal platform, mid-market"
+    - name: "Lawmatics"
+      domain: "lawmatics.com"
+      why: "legal CRM / intake — sales-forward product"
+  bad_fit_companies:
+    - name: "Clio"
+      domain: "clio.com"
+      why: "too large (2000+), already has mature outreach tooling"
+    - name: "MyCase"
+      domain: "mycase.com"
+      why: "owned by AffiniPay — enterprise buying, different motion"
+    - name: "LexisNexis"
+      domain: "lexisnexis.com"
+      why: "enterprise, not our ICP"
+  already_closed_customers: []
+
+person:
+  buyer_titles:
+    - "VP of Sales"
+    - "Head of Sales"
+    - "Chief Revenue Officer"
+    - "CRO"
+    - "VP Revenue"
+  champion_titles:
+    - "Head of Demand Gen"
+    - "VP Marketing"
+    - "Director of Sales Operations"
+    - "RevOps"
+  user_titles:
+    - "SDR Manager"
+    - "Head of SDR"
+    - "Sales Development"
+  primary_target: "buyer"
+
+  seniority_levels: ["C-Suite", "VP", "Director"]
+  functions: ["Sales", "Marketing"]
+
+  experience:
+    min_years_in_role: 1
+    min_years_at_company: null
+    recently_changed_jobs: false
+
+  disqualifiers:
+    exclude_titles:
+      - "VP of Engineering"
+      - "VP of Product"
+      - "CTO"
+    exclude_seniority: ["Entry", "Manager"]
+
+  ground_truth:
+    perfect_fit_people:
+      - linkedin: "linkedin.com/in/christianmclaughlin"
+        name: "Christian McLaughlin (VP Global Partnerships, ActionStep)"
+        why: "senior GTM leader at target-profile legal SaaS"
+    bad_fit_people: []
+
+signals:
+  pain_phrases:
+    - "our SDRs can't personalize at scale"
+    - "reply rates are terrible"
+    - "switching from Outreach"
+    - "Apollo alternative"
+  trigger_events:
+    - "funding"
+    - "new CRO"
+    - "SDR team expansion"
+  competitor_names:
+    - "Outreach.io"
+    - "Apollo.io"
+    - "Salesloft"
+  hiring_signals:
+    - "Head of SDR at {legal tech company}"
+    - "Director of Sales Development"
