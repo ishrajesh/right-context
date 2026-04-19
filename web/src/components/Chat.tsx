@@ -3,6 +3,7 @@ import { useStore } from '../hooks/useStore';
 import { runAgentTurn, type ExecutedTool } from '../lib/agent';
 import type { Message } from '../lib/types';
 import { MessageItem } from './MessageItem';
+import { CompanyPicker } from './CompanyPicker';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -11,6 +12,7 @@ export function Chat() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -125,7 +127,23 @@ export function Chat() {
         </div>
       </div>
 
-      <ChatInput value={input} onChange={setInput} onKey={onKey} onSend={() => send(input)} busy={busy} />
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        onKey={onKey}
+        onSend={() => send(input)}
+        onPick={() => setPickerOpen(true)}
+        busy={busy}
+      />
+
+      <CompanyPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSubmit={(names) => {
+          const msg = `perfect-fit companies: ${names.join(', ')}.`;
+          send(msg);
+        }}
+      />
     </div>
   );
 }
@@ -175,8 +193,8 @@ function Greeting({ hasKey }: { hasKey: boolean }) {
           animationDelay: '80ms',
         }}
       >
-        Answer in one or two sentences. I'll ask for 3–5 real companies you'd love
-        to land, enrich each, and plot a filter query from the pattern.
+        Answer in one or two sentences. I'll invite you to pick ~10 real companies
+        you'd love to land, enrich each, and plot a filter query from the pattern.
       </p>
 
       {!hasKey && (
@@ -202,12 +220,14 @@ function ChatInput({
   onChange,
   onKey,
   onSend,
+  onPick,
   busy,
 }: {
   value: string;
   onChange: (v: string) => void;
   onKey: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSend: () => void;
+  onPick: () => void;
   busy: boolean;
 }) {
   const [focused, setFocused] = useState(false);
@@ -228,13 +248,21 @@ function ChatInput({
           onBlur={() => setFocused(false)}
           rows={2}
           placeholder="say something to the surveyor…"
-          className="w-full bg-transparent outline-none resize-none text-[15px] leading-relaxed pr-24"
+          className="w-full bg-transparent outline-none resize-none text-[15px] leading-relaxed pr-36"
           style={{
             fontFamily: 'var(--font-sans)',
             color: 'var(--color-ink)',
           }}
         />
         <div className="absolute right-0 top-0 flex items-center gap-2">
+          <button
+            className="btn-tick disabled:opacity-30"
+            onClick={onPick}
+            disabled={busy}
+            title="pick perfect-fit companies from a list"
+          >
+            ⊞ pick
+          </button>
           <span className="coord">↵</span>
           <button
             className="btn-tick btn-tick-accent disabled:opacity-30"
@@ -246,7 +274,7 @@ function ChatInput({
         </div>
       </div>
       <div className="mt-2 flex items-center justify-between coord">
-        <span>⌘↵ to send</span>
+        <span>⌘↵ to send · ⊞ to pick</span>
         <span>{value.length.toString().padStart(4, '0')} ch</span>
       </div>
     </div>
