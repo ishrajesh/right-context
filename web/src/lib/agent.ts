@@ -3,6 +3,7 @@ import type { Filter, Session, Store } from './types';
 import { COMPANIES } from '../fixtures/companies';
 import { preflight, searchCompanies } from './filters';
 import { SYSTEM_PROMPT } from './prompts';
+import { postError } from './errorLog';
 
 // Session helpers
 function getSession(store: Store): Session {
@@ -319,6 +320,7 @@ export async function runAgentTurn(params: {
 
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
   const apiMessages = buildApiMessages(getStore(), userText);
+  const systemPrompt = buildSystemPrompt(getStore());
 
   let guard = 0;
   while (guard++ < 12) {
@@ -327,12 +329,23 @@ export async function runAgentTurn(params: {
       resp = await client.messages.create({
         model,
         max_tokens: 2048,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         tools: TOOLS,
         messages: apiMessages,
       });
     } catch (e: any) {
-      onError(e?.message || 'model call failed');
+      const msg = e?.message || 'model call failed';
+      postError({
+        type: 'agent.api',
+        message: msg,
+        stack: e?.stack,
+        context: {
+          guard,
+          lastMessageRoles: apiMessages.slice(-6).map((m) => m.role),
+          status: e?.status,
+        },
+      });
+      onError(msg);
       return;
     }
 
@@ -364,16 +377,37 @@ function buildApiMessages(store: Store, newUserText: string): Anthropic.MessageP
   const sess = getSession(store);
   const msgs: Anthropic.MessageParam[] = [];
 
-  const snapshot = stateSnapshot(store);
-  if (snapshot) msgs.push({ role: 'user', content: snapshot });
+  // Collapse stored history into strictly-alternating user/assistant turns.
+  // Consecutive same-role entries get merged so Anthropic's API never sees
+  // two user messages in a row.
+  let lastRole: 'user' | 'assistant' | null = null;
+  const push = (role: 'user' | 'assistant', content: string) => {
+    if (!content.trim()) return;
+    if (lastRole === role) {
+      const prev = msgs[msgs.length - 1];
+      prev.content = `${prev.content as string}\n\n${content}`;
+      return;
+    }
+    msgs.push({ role, content });
+    lastRole = role;
+  };
 
   for (const m of sess.messages) {
-    if (m.kind === 'user') msgs.push({ role: 'user', content: m.text });
-    else if (m.kind === 'assistant' && !m.pending) msgs.push({ role: 'assistant', content: m.text });
+    if (m.kind === 'user') push('user', m.text);
+    else if (m.kind === 'assistant' && !m.pending) push('assistant', m.text);
   }
 
-  msgs.push({ role: 'user', content: newUserText });
+  push('user', newUserText);
+
+  // The API requires the first message to be user. If by some path we got an
+  // assistant first, drop it; the system prompt carries state snapshot anyway.
+  while (msgs.length && msgs[0].role !== 'user') msgs.shift();
   return msgs;
+}
+
+function buildSystemPrompt(store: Store): string {
+  const snapshot = stateSnapshot(store);
+  return snapshot ? `${SYSTEM_PROMPT}\n\n${snapshot}` : SYSTEM_PROMPT;
 }
 
 function stateSnapshot(store: Store): string | null {

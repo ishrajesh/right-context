@@ -16,3 +16,7 @@ outreach_list*
 !.env.example
 !docs/
 !docs/*.md
+
+# Whitelist web app JSON files
+!web/*.json
+!web/src/**/*.json

@@ -32,7 +32,17 @@ function selectSession(s: Store): Session {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [store, setStore] = useState<Store>(() => loadStore());
+  const [store, setStore] = useState<Store>(() => {
+    const s = loadStore();
+    if (!s.sessions?.length) {
+      const fresh = emptySession();
+      return { ...s, sessions: [fresh], activeId: fresh.id };
+    }
+    if (!s.sessions.some((x) => x.id === s.activeId)) {
+      return { ...s, activeId: s.sessions[0].id };
+    }
+    return s;
+  });
   const ref = useRef(store);
 
   useEffect(() => {
